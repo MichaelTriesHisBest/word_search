@@ -35,8 +35,6 @@ def choose_random_direction():
     return random.choice(all_directions)
     
     
-#TODO
-#make method that checks X / Y coordinates to make sure the path is clear for word
 def check_line_of_word(starting_point, word_length, direction):
     """Checks to make sure that the path the word will be on will not collide with another word.
 
@@ -71,13 +69,13 @@ def check_line_of_word(starting_point, word_length, direction):
                 return False
             else:
                 next_y -=1
-    if direction == "down":
-        next_y = starting_y -1
+    if direction == "right":
+        next_y = starting_y +1
         for _ in range(word_length):
             if not available_grid_space(starting_x, next_y):
                 return False
             else:
-                next_y -=1
+                next_y +=1
     return True
 
 def available_grid_space(x_loc,y_loc):
