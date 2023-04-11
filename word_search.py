@@ -35,6 +35,12 @@ def choose_random_direction():
     return random.choice(all_directions)
     
     
+def calculate_next_coordinates(x,y,direction):
+    x_adjustment, y_adjustment = DIRECTION_MAP.get(direction)
+    new_x = x + x_adjustment
+    new_y = y + y_adjustment
+    return new_x, new_y
+    
 def check_line_of_word(starting_point, word_length, direction):
     """Checks to make sure that the path the word will be on will not collide with another word.
 
@@ -46,36 +52,11 @@ def check_line_of_word(starting_point, word_length, direction):
     Returns:
         bool: True if the line will not collide. False otherwise.
     """
-    
     starting_x, starting_y = starting_point
-    if direction == "up":
-        next_x = starting_x - 1
-        for _ in range(word_length):
-            if not available_grid_space(next_x, starting_y):
-                return False
-            else:
-                next_x -=1
-    if direction == "down":
-        next_x = starting_x + 1
-        for _ in range(word_length):
-            if not available_grid_space(next_x, starting_y):
-                return False
-            else:
-                next_x +=1
-    if direction == "left":
-        next_y = starting_y -1
-        for _ in range(word_length):
-            if not available_grid_space(starting_x, next_y):
-                return False
-            else:
-                next_y -=1
-    if direction == "right":
-        next_y = starting_y +1
-        for _ in range(word_length):
-            if not available_grid_space(starting_x, next_y):
-                return False
-            else:
-                next_y +=1
+    for _ in range(word_length):
+        x,y = calculate_next_coordinates(starting_x, starting_y, direction)
+        if not available_grid_space(x, y):
+            return False
     return True
 
 def available_grid_space(x_loc,y_loc):
@@ -166,12 +147,11 @@ def populate_grid_with_words(grid):
         grid (2D Array): the 2D, already randomy-filled grid.
     """
     for word in LIST_OF_WORDS:
-        print(TAKEN_SPACES)
         word_len = len(word)
         char = 0
         direction = choose_random_direction()
-        print(f"direction is {direction}")
         x,y = determine_start(word, direction)
+        print(TAKEN_SPACES)
         while True:
             if char == word_len:
                 break
@@ -179,14 +159,8 @@ def populate_grid_with_words(grid):
             grid[x][y] = letter
             char +=1
             TAKEN_SPACES.append(tuple((x,y)))
-            if direction == "up":
-                x -=1
-            if direction == "down":
-                x +=1
-            if direction == "left":
-                y -=1
-            if direction == "right":
-                y +=1
+            x,y = calculate_next_coordinates(x,y, direction)
+
 
 def fill_grid():
     return [[random_alphabet_generator() for x in range(GRID_LENGTH)] for i in range(GRID_HEIGHT)]
@@ -196,3 +170,4 @@ if __name__ == "__main__":
     word_grid = fill_grid()
     populate_grid_with_words(word_grid)
     pretty_print(word_grid)
+    
